@@ -63,8 +63,8 @@ let setCounts = {};
 
 function loadWorkout() {
 
-    const selected = document.getElementById("splitSelect").value;
-    const workout = workouts[selected];
+    let selected = document.getElementById("splitSelect").value;
+    let workout = workouts[selected];
 
     document.getElementById("dayTitle").textContent = workout.name;
 
@@ -83,15 +83,16 @@ function loadWorkout() {
                 <div class="set">
                     Set 1:
                     Reps 
-                    <input type="number" class="reps">
+                    <input type="number">
 
                     Weight
-                    <input type="number" class="weight" value="0">
+                    <input type="number" value="0">
+
                     lbs
                 </div>
             </div>
 
-            <button type="button" class="addSetButton" data-index="${index}">
+            <button type="button" onclick="addSet(${index})">
                 ➕ Add Set
             </button>
 
@@ -104,49 +105,44 @@ function loadWorkout() {
 
 
 
-document.addEventListener("click", function(e){
+function addSet(index) {
 
-    if(e.target.matches(".addSetButton")){
-
-        console.log("Add Set clicked");
-
-        const index = e.target.dataset.index;
-
-        setCounts[index] = (setCounts[index] || 1) + 1;
-
-        const number = setCounts[index];
-
-        document
-        .getElementById(`sets-${index}`)
-        .insertAdjacentHTML(
-            "beforeend",
-            `
-            <div class="set">
-                Set ${number}:
-                Reps
-                <input type="number" class="reps">
-
-                Weight
-                <input type="number" class="weight" value="0">
-                lbs
-            </div>
-            `
-        );
+    if (!setCounts[index]) {
+        setCounts[index] = 1;
     }
 
-});
+    setCounts[index]++;
+
+    let number = setCounts[index];
+
+    document.getElementById(`sets-${index}`).insertAdjacentHTML(
+        "beforeend",
+        `
+        <div class="set">
+            Set ${number}:
+            Reps
+            <input type="number">
+
+            Weight
+            <input type="number" value="0">
+
+            lbs
+        </div>
+        `
+    );
+}
 
 
 
-function completeWorkout(){
+function completeWorkout() {
 
-    console.log("Workout completed");
+    let selected = document.getElementById("splitSelect").value;
 
     localStorage.setItem(
         "lastWorkout",
         JSON.stringify({
-            date: new Date().toLocaleString(),
-            workout: document.getElementById("splitSelect").value
+            workout: selected,
+            date: new Date().toLocaleString()
         })
     );
 
@@ -155,6 +151,4 @@ function completeWorkout(){
 
 
 
-window.onload = function(){
-    loadWorkout();
-};
+loadWorkout();
