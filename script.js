@@ -63,12 +63,10 @@ let setCounts = {};
 
 function loadWorkout() {
 
-    let selected = document.getElementById("splitSelect").value;
-    let workout = workouts[selected];
+    const selected = document.getElementById("splitSelect").value;
+    const workout = workouts[selected];
 
-    document.getElementById("dayTitle").innerText = workout.name;
-
-    setCounts = {};
+    document.getElementById("dayTitle").textContent = workout.name;
 
     let html = "";
 
@@ -79,24 +77,21 @@ function loadWorkout() {
         html += `
         <div class="exercise">
 
-            <strong>${exercise}</strong>
+            <h3>${exercise}</h3>
 
             <div id="sets-${index}">
+                <div class="set">
+                    Set 1:
+                    Reps 
+                    <input type="number" class="reps">
 
-                <br>
-
-                Set 1:
-                Reps 
-                <input id="reps-${index}-1" type="number">
-
-                Weight 
-                <input id="weight-${index}-1" type="number" value="0">
-
-                lbs
-
+                    Weight
+                    <input type="number" class="weight" value="0">
+                    lbs
+                </div>
             </div>
 
-            <button class="addSetButton" data-index="${index}">
+            <button type="button" class="addSetButton" data-index="${index}">
                 ➕ Add Set
             </button>
 
@@ -104,44 +99,39 @@ function loadWorkout() {
         `;
     });
 
-
     document.getElementById("workout").innerHTML = html;
 }
 
 
 
-document.addEventListener("click", function(event){
+document.addEventListener("click", function(e){
 
-    if(event.target.classList.contains("addSetButton")){
+    if(e.target.matches(".addSetButton")){
 
-        let index = event.target.dataset.index;
+        console.log("Add Set clicked");
 
-        if(!setCounts[index]){
-            setCounts[index] = 1;
-        }
+        const index = e.target.dataset.index;
 
-        setCounts[index]++;
+        setCounts[index] = (setCounts[index] || 1) + 1;
 
-        let setNumber = setCounts[index];
+        const number = setCounts[index];
 
-
-        document.getElementById(`sets-${index}`).insertAdjacentHTML(
+        document
+        .getElementById(`sets-${index}`)
+        .insertAdjacentHTML(
             "beforeend",
-
             `
-            <br>
+            <div class="set">
+                Set ${number}:
+                Reps
+                <input type="number" class="reps">
 
-            Set ${setNumber}:
-            Reps 
-            <input id="reps-${index}-${setNumber}" type="number">
-
-            Weight 
-            <input id="weight-${index}-${setNumber}" type="number" value="0">
-
-            lbs
+                Weight
+                <input type="number" class="weight" value="0">
+                lbs
+            </div>
             `
         );
-
     }
 
 });
@@ -150,9 +140,21 @@ document.addEventListener("click", function(event){
 
 function completeWorkout(){
 
+    console.log("Workout completed");
+
+    localStorage.setItem(
+        "lastWorkout",
+        JSON.stringify({
+            date: new Date().toLocaleString(),
+            workout: document.getElementById("splitSelect").value
+        })
+    );
+
     alert("Workout saved!");
 }
 
 
 
-loadWorkout();
+window.onload = function(){
+    loadWorkout();
+};
