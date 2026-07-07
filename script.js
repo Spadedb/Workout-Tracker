@@ -58,122 +58,34 @@ const workouts = {
 };
 
 
-let currentExercises = [];
-
-
 function loadWorkout() {
 
-    const selected = document.getElementById("splitSelect").value;
-    const workout = workouts[selected];
+    let selected = document.getElementById("splitSelect").value;
 
-    document.getElementById("dayTitle").innerHTML = workout.name;
+    let workout = workouts[selected];
 
-    currentExercises = workout.exercises;
+    document.getElementById("dayTitle").innerText = workout.name;
+
 
     let html = "";
 
-    currentExercises.forEach((exercise, index) => {
+    workout.exercises.forEach(function(exercise){
 
         html += `
         <div class="exercise">
+            <strong>${exercise}</strong>
+            <br><br>
 
-        <strong>${exercise}</strong>
-
-        <br><br>
-
-        <div id="sets-${index}">
-
-        Set 1:
-        Reps <input id="reps-${index}-1" type="number">
-        Weight <input id="weight-${index}-1" type="number" value="0">
-
-        </div>
-
-        <button onclick="addSet(${index})">
-        ➕ Add Set
-        </button>
-
+            Set 1:
+            Reps <input type="number">
+            Weight <input type="number" value="0">
         </div>
         `;
+
     });
 
 
     document.getElementById("workout").innerHTML = html;
-}
-
-
-
-let setCounts = {};
-
-
-function addSet(index){
-
-    if(!setCounts[index]){
-        setCounts[index] = 1;
-    }
-
-    setCounts[index]++;
-
-    let setNumber = setCounts[index];
-
-    document.getElementById(`sets-${index}`).innerHTML += `
-
-    <br>
-
-    Set ${setNumber}:
-    Reps <input id="reps-${index}-${setNumber}" type="number">
-    Weight <input id="weight-${index}-${setNumber}" type="number" value="0">
-
-    `;
-}
-
-
-
-function completeWorkout(){
-
-    let saved = {};
-
-    currentExercises.forEach((exercise,index)=>{
-
-        let sets=[];
-
-        let totalSets = setCounts[index] || 1;
-
-
-        for(let i=1;i<=totalSets;i++){
-
-            let reps = document.getElementById(`reps-${index}-${i}`).value;
-            let weight = document.getElementById(`weight-${index}-${i}`).value;
-
-
-            if(reps){
-
-                sets.push({
-                    reps: reps,
-                    weight: weight
-                });
-
-            }
-
-        }
-
-
-        if(sets.length){
-
-            saved[exercise] = sets;
-
-        }
-
-    });
-
-
-    localStorage.setItem(
-        "exerciseData",
-        JSON.stringify(saved)
-    );
-
-
-    alert("Workout saved!");
 }
 
 
