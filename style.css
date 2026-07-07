@@ -1,0 +1,60 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+.exercise {
+    background: #2a2a2a;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+}
+
+input {
+    width: 60px;
+    padding: 5px;
+    margin-left: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+#history {
+    margin-top: 10px;
+    line-height: 1.6;
+}
