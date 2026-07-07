@@ -57,6 +57,7 @@ const workouts = {
     }
 };
 
+
 let setCounts = {};
 
 
@@ -78,51 +79,80 @@ function loadWorkout() {
         html += `
         <div class="exercise">
 
-        <strong>${exercise}</strong>
+            <strong>${exercise}</strong>
 
-        <div id="sets-${index}">
+            <div id="sets-${index}">
 
-        <br>
-        Set 1:
-        Reps <input id="reps-${index}-1" type="number">
-        Weight <input id="weight-${index}-1" type="number" value="0">
+                <br>
 
-        </div>
+                Set 1:
+                Reps 
+                <input id="reps-${index}-1" type="number">
 
-        <button onclick="addSet(${index})">
-        ➕ Add Set
-        </button>
+                Weight 
+                <input id="weight-${index}-1" type="number" value="0">
+
+                lbs
+
+            </div>
+
+            <button class="addSetButton" data-index="${index}">
+                ➕ Add Set
+            </button>
 
         </div>
         `;
     });
 
+
     document.getElementById("workout").innerHTML = html;
 }
 
 
-function addSet(index){
 
-    setCounts[index]++;
+document.addEventListener("click", function(event){
 
-    let setNumber = setCounts[index];
+    if(event.target.classList.contains("addSetButton")){
 
-    document.getElementById(`sets-${index}`).innerHTML += `
+        let index = event.target.dataset.index;
 
-    <br>
+        if(!setCounts[index]){
+            setCounts[index] = 1;
+        }
 
-    Set ${setNumber}:
-    Reps <input id="reps-${index}-${setNumber}" type="number">
-    Weight <input id="weight-${index}-${setNumber}" type="number" value="0">
+        setCounts[index]++;
 
-    `;
-}
+        let setNumber = setCounts[index];
+
+
+        document.getElementById(`sets-${index}`).insertAdjacentHTML(
+            "beforeend",
+
+            `
+            <br>
+
+            Set ${setNumber}:
+            Reps 
+            <input id="reps-${index}-${setNumber}" type="number">
+
+            Weight 
+            <input id="weight-${index}-${setNumber}" type="number" value="0">
+
+            lbs
+            `
+        );
+
+    }
+
+});
+
 
 
 function completeWorkout(){
 
     alert("Workout saved!");
 }
+
 
 
 loadWorkout();
