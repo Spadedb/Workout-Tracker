@@ -68,9 +68,12 @@ function loadWorkout() {
 
     document.getElementById("dayTitle").textContent = workout.name;
 
-    let lastWorkout = JSON.parse(localStorage.getItem(selected));
+    let savedWorkout = JSON.parse(
+        localStorage.getItem("last_" + selected)
+    );
 
     let html = "";
+
 
     workout.exercises.forEach((exercise, index) => {
 
@@ -78,16 +81,23 @@ function loadWorkout() {
 
         let previous = "";
 
-        if (lastWorkout && lastWorkout[exercise]) {
+        if (savedWorkout && savedWorkout[exercise]) {
+
             previous = `
-            <p class="previous">
-            Last time:
-            ${lastWorkout[exercise].map((set, i) =>
-                `Set ${i + 1}: ${set.reps} reps, ${set.weight} lbs`
-            ).join("<br>")}
-            </p>
+            <div class="previous">
+                <strong>Last time:</strong><br>
+                ${
+                    savedWorkout[exercise]
+                    .map((set, i) =>
+                        `Set ${i + 1}: ${set.reps} reps, ${set.weight} lbs`
+                    )
+                    .join("<br>")
+                }
+            </div>
             `;
+
         }
+
 
         html += `
         <div class="exercise">
@@ -97,8 +107,11 @@ function loadWorkout() {
             ${previous}
 
             <div id="sets-${index}">
+
                 <div class="set">
+
                     Set 1:
+
                     Reps
                     <input class="reps" type="number">
 
@@ -106,79 +119,120 @@ function loadWorkout() {
                     <input class="weight" type="number" value="0">
 
                     lbs
+
                 </div>
+
             </div>
+
 
             <button type="button" onclick="addSet(${index})">
                 ➕ Add Set
             </button>
 
+
         </div>
         `;
+
     });
 
+
     document.getElementById("workout").innerHTML = html;
+
 }
 
 
 
 function addSet(index) {
 
+    if (!setCounts[index]) {
+        setCounts[index] = 1;
+    }
+
+
     setCounts[index]++;
+
 
     let number = setCounts[index];
 
-    document.getElementById(`sets-${index}`).insertAdjacentHTML(
+
+    document
+    .getElementById(`sets-${index}`)
+    .insertAdjacentHTML(
         "beforeend",
+
         `
         <div class="set">
+
             Set ${number}:
+
             Reps
             <input class="reps" type="number">
+
 
             Weight
             <input class="weight" type="number" value="0">
 
             lbs
+
         </div>
         `
     );
+
 }
+
 
 
 
 function completeWorkout() {
 
     let selected = document.getElementById("splitSelect").value;
+
     let workout = workouts[selected];
 
     let saveData = {};
 
+
     workout.exercises.forEach((exercise, index) => {
+
 
         let sets = [];
 
-        let container = document.getElementById(`sets-${index}`);
 
-        let reps = container.querySelectorAll(".reps");
-        let weights = container.querySelectorAll(".weight");
+        let repsInputs = document
+        .getElementById(`sets-${index}`)
+        .querySelectorAll(".reps");
 
-        for(let i = 0; i < reps.length; i++) {
+
+        let weightInputs = document
+        .getElementById(`sets-${index}`)
+        .querySelectorAll(".weight");
+
+
+
+        for (let i = 0; i < repsInputs.length; i++) {
+
 
             sets.push({
-                reps: reps[i].value || 0,
-                weight: weights[i].value || 0
+
+                reps: repsInputs[i].value || 0,
+
+                weight: weightInputs[i].value || 0
+
             });
+
 
         }
 
+
         saveData[exercise] = sets;
+
 
     });
 
 
+
     localStorage.setItem(
-        selected,
+        "last_" + selected,
         JSON.stringify(saveData)
     );
 
@@ -186,4 +240,7 @@ function completeWorkout() {
     alert("Workout saved!");
 
 }
+
+
+
 loadWorkout();
