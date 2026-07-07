@@ -57,7 +57,6 @@ const workouts = {
     }
 };
 
-
 let setCounts = {};
 
 
@@ -66,7 +65,12 @@ function loadWorkout() {
     const selected = document.getElementById("splitSelect").value;
     const workout = workouts[selected];
 
+    // clear old workout data
+    document.getElementById("workout").innerHTML = "";
+
     document.getElementById("dayTitle").innerHTML = workout.name;
+
+    setCounts = {};
 
     let saved = JSON.parse(localStorage.getItem("exerciseData")) || {};
 
@@ -84,8 +88,7 @@ function loadWorkout() {
         <strong>${exercise}</strong><br><br>
 
         ${previous ? 
-        "Last time:<br>" + 
-        previous.sets.map((set,index)=> 
+        "Last time:<br>" + previous.sets.map((set,index)=>
         `Set ${index+1}: ${set.reps} reps @ ${set.weight} lbs`
         ).join("<br>")
         :
@@ -96,10 +99,10 @@ function loadWorkout() {
 
         <div id="${exercise}-sets">
 
-            Set 1:
-            Reps <input id="${exercise}-reps-1" type="number">
-            Weight <input id="${exercise}-weight-1" type="number" value="0">
-            lbs
+        Set 1:
+        Reps <input id="${exercise}-reps-1" type="number">
+        Weight <input id="${exercise}-weight-1" type="number" value="0">
+        lbs
 
         </div>
 
@@ -121,9 +124,7 @@ function addSet(exercise){
 
     let number = setCounts[exercise];
 
-    let container = document.getElementById(`${exercise}-sets`);
-
-    container.innerHTML += `
+    document.getElementById(`${exercise}-sets`).innerHTML += `
 
     <br>
 
@@ -142,77 +143,31 @@ function completeWorkout(){
 
     Object.keys(setCounts).forEach(exercise=>{
 
-        let sets = [];
+        let sets=[];
 
-        for(let i = 1; i <= setCounts[exercise]; i++){
+        for(let i=1;i<=setCounts[exercise];i++){
 
-            let reps = document.getElementById(`${exercise}-reps-${i}`).value;
-            let weight = document.getElementById(`${exercise}-weight-${i}`).value;
+            let reps=document.getElementById(`${exercise}-reps-${i}`).value;
+            let weight=document.getElementById(`${exercise}-weight-${i}`).value;
 
             if(reps){
-
                 sets.push({
                     reps: reps,
                     weight: weight
                 });
-
             }
         }
 
-
-        if(sets.length > 0){
-
-            saved[exercise] = {
-                sets: sets
-            };
-
+        if(sets.length){
+            saved[exercise]={sets:sets};
         }
 
     });
 
-
-    localStorage.setItem(
-        "exerciseData",
-        JSON.stringify(saved)
-    );
-
-
-    let history = JSON.parse(localStorage.getItem("history")) || [];
-
-    history.push({
-        date: new Date().toLocaleDateString(),
-        workout: document.getElementById("dayTitle").innerHTML
-    });
-
-
-    localStorage.setItem(
-        "history",
-        JSON.stringify(history)
-    );
-
-
-    displayHistory();
+    localStorage.setItem("exerciseData",JSON.stringify(saved));
 
     alert("Workout saved!");
 }
 
 
-function displayHistory(){
-
-    let history = JSON.parse(localStorage.getItem("history")) || [];
-
-    let html = "";
-
-    history.reverse().forEach(item=>{
-
-        html += `✅ ${item.date} - ${item.workout}<br>`;
-
-    });
-
-
-    document.getElementById("history").innerHTML = html;
-}
-
-
 loadWorkout();
-displayHistory();
