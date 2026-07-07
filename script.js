@@ -57,35 +57,71 @@ const workouts = {
     }
 };
 
+let setCounts = {};
+
 
 function loadWorkout() {
 
     let selected = document.getElementById("splitSelect").value;
-
     let workout = workouts[selected];
 
     document.getElementById("dayTitle").innerText = workout.name;
 
+    setCounts = {};
 
     let html = "";
 
-    workout.exercises.forEach(function(exercise){
+    workout.exercises.forEach((exercise, index) => {
+
+        setCounts[index] = 1;
 
         html += `
         <div class="exercise">
-            <strong>${exercise}</strong>
-            <br><br>
 
-            Set 1:
-            Reps <input type="number">
-            Weight <input type="number" value="0">
+        <strong>${exercise}</strong>
+
+        <div id="sets-${index}">
+
+        <br>
+        Set 1:
+        Reps <input id="reps-${index}-1" type="number">
+        Weight <input id="weight-${index}-1" type="number" value="0">
+
+        </div>
+
+        <button onclick="addSet(${index})">
+        ➕ Add Set
+        </button>
+
         </div>
         `;
-
     });
 
-
     document.getElementById("workout").innerHTML = html;
+}
+
+
+function addSet(index){
+
+    setCounts[index]++;
+
+    let setNumber = setCounts[index];
+
+    document.getElementById(`sets-${index}`).innerHTML += `
+
+    <br>
+
+    Set ${setNumber}:
+    Reps <input id="reps-${index}-${setNumber}" type="number">
+    Weight <input id="weight-${index}-${setNumber}" type="number" value="0">
+
+    `;
+}
+
+
+function completeWorkout(){
+
+    alert("Workout saved!");
 }
 
 
