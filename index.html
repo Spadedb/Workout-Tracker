@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spadedb Workout Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>Spadedb Workout Tracker</h1>
+
+<div class="container">
+
+<h2 id="dayTitle">Today's Workout</h2>
+
+<select id="splitSelect" onchange="loadWorkout()">
+    <option value="push">Push Day</option>
+    <option value="pull">Pull Day</option>
+    <option value="legs">Legs + Core</option>
+    <option value="upper">Upper Strength</option>
+    <option value="full">Full Body</option>
+</select>
+
+<div id="workout"></div>
+
+<button onclick="completeWorkout()">Complete Workout</button>
+
+<h2>Workout History</h2>
+<div id="history"></div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
