@@ -58,6 +58,9 @@ const workouts = {
 };
 
 
+let setCounts = {};
+
+
 function loadWorkout() {
 
     const selected = document.getElementById("splitSelect").value;
@@ -65,35 +68,45 @@ function loadWorkout() {
 
     document.getElementById("dayTitle").innerHTML = workout.name;
 
-    let html = "";
-
     let saved = JSON.parse(localStorage.getItem("exerciseData")) || {};
 
+    let html = "";
+
     workout.exercises.forEach(exercise => {
+
+        setCounts[exercise] = 1;
 
         let previous = saved[exercise];
 
         html += `
         <div class="exercise">
-            <strong>${exercise}</strong><br><br>
 
-            ${previous ? 
-            `Last time: ${previous.sets} sets × ${previous.reps} reps @ ${previous.weight} lbs`
-            :
-            "No previous record"
-            }
+        <strong>${exercise}</strong><br><br>
 
-            <br><br>
+        ${previous ? 
+        "Last time:<br>" + 
+        previous.sets.map((set,index)=> 
+        `Set ${index+1}: ${set.reps} reps @ ${set.weight} lbs`
+        ).join("<br>")
+        :
+        "No previous record"
+        }
 
-            Sets:
-            <input id="${exercise}-sets" type="number" min="0">
+        <br><br>
 
-            Reps:
-            <input id="${exercise}-reps" type="number" min="0">
+        <div id="${exercise}-sets">
 
-            Weight:
-            <input id="${exercise}-weight" type="number" min="0" value="0">
+            Set 1:
+            Reps <input id="${exercise}-reps-1" type="number">
+            Weight <input id="${exercise}-weight-1" type="number" value="0">
             lbs
+
+        </div>
+
+        <button onclick="addSet('${exercise}')">
+        ➕ Add Set
+        </button>
+
         </div>
         `;
     });
@@ -102,41 +115,81 @@ function loadWorkout() {
 }
 
 
-function completeWorkout() {
+function addSet(exercise){
+
+    setCounts[exercise]++;
+
+    let number = setCounts[exercise];
+
+    let container = document.getElementById(`${exercise}-sets`);
+
+    container.innerHTML += `
+
+    <br>
+
+    Set ${number}:
+    Reps <input id="${exercise}-reps-${number}" type="number">
+    Weight <input id="${exercise}-weight-${number}" type="number" value="0">
+    lbs
+
+    `;
+}
+
+
+function completeWorkout(){
 
     let saved = JSON.parse(localStorage.getItem("exerciseData")) || {};
 
-    const selected = document.getElementById("splitSelect").value;
+    Object.keys(setCounts).forEach(exercise=>{
 
-    workouts[selected].exercises.forEach(exercise => {
+        let sets = [];
 
-        let sets = document.getElementById(`${exercise}-sets`).value;
-        let reps = document.getElementById(`${exercise}-reps`).value;
-        let weight = document.getElementById(`${exercise}-weight`).value;
+        for(let i = 1; i <= setCounts[exercise]; i++){
 
-        if (sets && reps) {
+            let reps = document.getElementById(`${exercise}-reps-${i}`).value;
+            let weight = document.getElementById(`${exercise}-weight-${i}`).value;
+
+            if(reps){
+
+                sets.push({
+                    reps: reps,
+                    weight: weight
+                });
+
+            }
+        }
+
+
+        if(sets.length > 0){
 
             saved[exercise] = {
-                sets: sets,
-                reps: reps,
-                weight: weight
+                sets: sets
             };
 
         }
 
     });
 
-    localStorage.setItem("exerciseData", JSON.stringify(saved));
+
+    localStorage.setItem(
+        "exerciseData",
+        JSON.stringify(saved)
+    );
 
 
     let history = JSON.parse(localStorage.getItem("history")) || [];
 
     history.push({
         date: new Date().toLocaleDateString(),
-        workout: workouts[selected].name
+        workout: document.getElementById("dayTitle").innerHTML
     });
 
-    localStorage.setItem("history", JSON.stringify(history));
+
+    localStorage.setItem(
+        "history",
+        JSON.stringify(history)
+    );
+
 
     displayHistory();
 
@@ -144,17 +197,18 @@ function completeWorkout() {
 }
 
 
-function displayHistory() {
+function displayHistory(){
 
     let history = JSON.parse(localStorage.getItem("history")) || [];
 
     let html = "";
 
-    history.reverse().forEach(item => {
+    history.reverse().forEach(item=>{
 
         html += `✅ ${item.date} - ${item.workout}<br>`;
 
     });
+
 
     document.getElementById("history").innerHTML = html;
 }
